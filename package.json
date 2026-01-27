@@ -1,0 +1,64 @@
+{
+  "name": "iclaude-workbench",
+  "displayName": "iClaude Workbench",
+  "description": "AI-native task management workbench for Claude Code",
+  "version": "0.1.0",
+  "publisher": "iclaude",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "iclaude-workbench.showTaskBoard",
+        "title": "iClaude Workbench: Show Task Board",
+        "icon": "$(checklist)"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "iclaude-workbench.showTaskBoard",
+          "group": "navigation",
+          "when": "true"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "build": "npm run compile && npm run build:webview",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "build:webview": "cd webview && vite build",
+    "watch:webview": "cd webview && vite build --watch",
+    "lint": "eslint src --ext ts",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "@vscode/vsce": "^2.22.0",
+    "esbuild": "^0.19.11",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.11"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
