@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm compile:*)",
+      "Bash(pnpm build:webview:*)",
+      "Bash(dir:*)",
+      "Bash(npx tsc:*)",
+      "Bash(pnpm --version:*)",
+      "Bash(npm install:*)",
+      "Bash(ls:*)",
+      "Bash(npm --version:*)",
+      "Bash(pnpm run compile:*)",
+      "Bash(test:*)",
+      "Bash(node_modules/.bin/tsc:*)",
+      "Bash(./node_modules/.bin/tsc:*)",
+      "Bash(node node_modules/typescript/lib/tsc.js:*)",
+      "Bash(npx vite build)",
+      "Bash(node:*)",
+      "Bash(pnpm lint:*)"
+    ]
+  }
+}
