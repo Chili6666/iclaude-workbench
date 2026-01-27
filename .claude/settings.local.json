@@ -27,7 +27,12 @@
       "Bash(cat:*)",
       "WebFetch(domain:code.visualstudio.com)",
       "Bash(npm run compile:*)",
-      "Bash(npm run build:webview:*)"
+      "Bash(npm run build:webview:*)",
+      "Bash(git checkout:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(npm run)",
+      "Bash(npm run package:*)"
     ]
   }
 }
