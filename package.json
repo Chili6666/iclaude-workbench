@@ -58,7 +58,7 @@
     "watch:webview": "cd webview && vite build --watch",
     "lint": "eslint src --ext ts",
     "test": "echo \"No tests yet\" && exit 0",
-    "package": "vsce package"
+    "package": "vsce package --no-dependencies"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
