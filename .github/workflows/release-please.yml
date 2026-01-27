@@ -1,16 +1,33 @@
-name: Release
+name: Release Please
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
-  release:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - name: Release Please
+        id: release
+        uses: googleapis/release-please-action@v4
+        with:
+          release-type: node
+
+  build-release:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -35,17 +52,10 @@ jobs:
       - name: Package extension
         run: pnpm package
 
-      - name: Get package info
-        id: package
-        run: |
-          echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
-          echo "name=$(node -p "require('./package.json').name")" >> $GITHUB_OUTPUT
-
-      - name: Create GitHub Release
+      - name: Upload VSIX to Release
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ needs.release-please.outputs.tag_name }}
           files: '*.vsix'
-          generate_release_notes: true
-          name: v${{ steps.package.outputs.version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
