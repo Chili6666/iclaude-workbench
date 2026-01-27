@@ -1,19 +1,65 @@
 import * as vscode from 'vscode';
+import { TaskService, Task } from '../services/TaskService';
 
 export class TaskBoardPanel {
   public static currentPanel: TaskBoardPanel | undefined;
   private readonly _panel: vscode.WebviewPanel;
   private _disposables: vscode.Disposable[] = [];
+  private _taskService: TaskService;
 
   private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
     this._panel = panel;
+    this._taskService = TaskService.getInstance();
 
     this._panel.webview.html = this._getWebviewContent(
       this._panel.webview,
       extensionUri
     );
 
+    // Set up message handling from webview
+    this._panel.webview.onDidReceiveMessage(
+      (message) => this._handleMessage(message),
+      null,
+      this._disposables
+    );
+
+    // Listen for task changes
+    this._taskService.onTasksChanged(
+      (tasks) => this._sendTasksToWebview(tasks),
+      null,
+      this._disposables
+    );
+
+    // Load initial tasks
+    this._loadInitialTasks();
+
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
+  }
+
+  private async _loadInitialTasks(): Promise<void> {
+    const tasks = await this._taskService.loadAllTasks();
+    this._sendTasksToWebview(tasks);
+  }
+
+  private _sendTasksToWebview(tasks: Task[]): void {
+    this._panel.webview.postMessage({
+      type: 'tasksUpdated',
+      tasks: tasks,
+    });
+  }
+
+  private async _handleMessage(message: { type: string; taskId?: string; filePath?: string }): Promise<void> {
+    switch (message.type) {
+      case 'requestTasks':
+        await this._loadInitialTasks();
+        break;
+      case 'openTaskFile':
+        if (message.filePath) {
+          const uri = vscode.Uri.file(message.filePath);
+          await vscode.window.showTextDocument(uri, { preview: true });
+        }
+        break;
+    }
   }
 
   public static render(extensionUri: vscode.Uri) {
@@ -56,6 +102,9 @@ export class TaskBoardPanel {
     const scriptUri = webview.asWebviewUri(
       vscode.Uri.joinPath(extensionUri, 'out', 'webview', 'assets', 'index.js')
     );
+    const styleUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(extensionUri, 'out', 'webview', 'assets', 'index.css')
+    );
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -64,6 +113,7 @@ export class TaskBoardPanel {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src ${webview.cspSource};">
   <title>iClaude Workbench</title>
+  <link rel="stylesheet" href="${styleUri}">
 </head>
 <body>
   <div id="root"></div>

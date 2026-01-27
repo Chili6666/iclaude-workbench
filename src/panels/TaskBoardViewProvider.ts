@@ -1,10 +1,22 @@
 import * as vscode from 'vscode';
+import { TaskService, Task } from '../services/TaskService';
 
 export class TaskBoardViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = 'iclaude-workbench.taskBoardView';
   private _view?: vscode.WebviewView;
+  private _disposables: vscode.Disposable[] = [];
+  private _taskService: TaskService;
 
-  constructor(private readonly _extensionUri: vscode.Uri) {}
+  constructor(private readonly _extensionUri: vscode.Uri) {
+    this._taskService = TaskService.getInstance();
+
+    // Listen for task changes
+    this._taskService.onTasksChanged(
+      (tasks) => this._sendTasksToWebview(tasks),
+      null,
+      this._disposables
+    );
+  }
 
   public resolveWebviewView(
     webviewView: vscode.WebviewView,
@@ -24,6 +36,44 @@ export class TaskBoardViewProvider implements vscode.WebviewViewProvider {
       webviewView.webview,
       this._extensionUri
     );
+
+    // Set up message handling from webview
+    webviewView.webview.onDidReceiveMessage(
+      (message) => this._handleMessage(message),
+      null,
+      this._disposables
+    );
+
+    // Load initial tasks
+    this._loadInitialTasks();
+  }
+
+  private async _loadInitialTasks(): Promise<void> {
+    const tasks = await this._taskService.loadAllTasks();
+    this._sendTasksToWebview(tasks);
+  }
+
+  private _sendTasksToWebview(tasks: Task[]): void {
+    if (this._view) {
+      this._view.webview.postMessage({
+        type: 'tasksUpdated',
+        tasks: tasks,
+      });
+    }
+  }
+
+  private async _handleMessage(message: { type: string; taskId?: string; filePath?: string }): Promise<void> {
+    switch (message.type) {
+      case 'requestTasks':
+        await this._loadInitialTasks();
+        break;
+      case 'openTaskFile':
+        if (message.filePath) {
+          const uri = vscode.Uri.file(message.filePath);
+          await vscode.window.showTextDocument(uri, { preview: true });
+        }
+        break;
+    }
   }
 
   private _getWebviewContent(
@@ -47,5 +97,14 @@ export class TaskBoardViewProvider implements vscode.WebviewViewProvider {
   <script type="module" src="${scriptUri}"></script>
 </body>
 </html>`;
+  }
+
+  public dispose(): void {
+    while (this._disposables.length) {
+      const disposable = this._disposables.pop();
+      if (disposable) {
+        disposable.dispose();
+      }
+    }
   }
 }
