@@ -1,0 +1,15 @@
+src/**
+webview/src/**
+webview/*.json
+webview/vite.config.ts
+.vscode/**
+.github/**
+.claude/**
+docs/**
+*.map
+node_modules/**
+*.vsix
+.eslintrc.json
+tsconfig.json
+pnpm-lock.yaml
+CLAUDE.md
