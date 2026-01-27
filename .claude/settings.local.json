@@ -19,7 +19,15 @@
       "Bash(node node_modules/typescript/lib/tsc.js:*)",
       "Bash(npx vite build)",
       "Bash(node:*)",
-      "Bash(pnpm lint:*)"
+      "Bash(pnpm lint:*)",
+      "Bash(pnpm build:*)",
+      "Bash(npm run build:*)",
+      "Bash(pnpm run build:webview:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(cat:*)",
+      "WebFetch(domain:code.visualstudio.com)",
+      "Bash(npm run compile:*)",
+      "Bash(npm run build:webview:*)"
     ]
   }
 }

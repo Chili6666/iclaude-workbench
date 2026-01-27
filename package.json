@@ -15,6 +15,24 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "iclaude-workbench",
+          "title": "iClaude Workbench",
+          "icon": "$(checklist)"
+        }
+      ]
+    },
+    "views": {
+      "iclaude-workbench": [
+        {
+          "type": "webview",
+          "id": "iclaude-workbench.taskBoardView",
+          "name": "Task Board"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "iclaude-workbench.showTaskBoard",
