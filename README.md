@@ -2,6 +2,39 @@
 
 AI-native task management workbench for Claude Code.
 
+## Installation
+
+### For Team Members (from GitHub Releases)
+
+1. Go to [Releases](https://github.com/Chili6666/iclaude-workbench/releases)
+2. Download the `.vsix` file from the latest release
+3. Install in VS Code:
+   - **Option A (GUI):** Press `Ctrl+Shift+P` → "Extensions: Install from VSIX..." → select the downloaded file
+   - **Option B (CLI):** Run `code --install-extension iclaude-workbench-x.x.x.vsix`
+4. Reload VS Code
+
+> **Note:** If the `.vsix` file is not attached to the release, you can build it locally:
+> 1. Clone the repo
+> 2. Run `pnpm install && pnpm compile && pnpm build:webview && pnpm package`
+> 3. Install the generated `.vsix` file from the project root
+
+### Updating the Extension
+
+1. Download the new `.vsix` file from [Releases](https://github.com/Chili6666/iclaude-workbench/releases)
+2. Install it using the same method as above (it will replace the existing version)
+3. Reload VS Code
+
+### Uninstalling the Extension
+
+- **Option A (GUI):** Go to Extensions sidebar (`Ctrl+Shift+X`) → Find "iClaude Workbench" → Click the gear icon → "Uninstall"
+- **Option B (CLI):** Run `code --uninstall-extension chili6666.iclaude-workbench`
+
+### For Developers (from source)
+
+See [Development Setup](#development-setup) below.
+
+---
+
 ## Development Setup
 
 ### Prerequisites
