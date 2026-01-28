@@ -23,7 +23,7 @@ interface PlanViewProps {
 /**
  * PlanView component displays a split panel with plan list and content viewer.
  */
-export function PlanView({
+export const PlanView = ({
   plans,
   selectedPlanId,
   searchQuery,
@@ -35,7 +35,7 @@ export function PlanView({
   onDropPlan,
   selectedFolderPath,
   onFolderChange,
-}: PlanViewProps) {
+}: PlanViewProps) => {
   const [sidebarWidth, setSidebarWidth] = useState(280);
 
   const handleResize = useCallback((width: number) => {

@@ -13,7 +13,7 @@ interface PlanListItemProps {
  * PlanListItem component displays a single plan in the sidebar list.
  * Shows a copy button on hover to copy plan files to the project.
  */
-export function PlanListItem({ plan, isSelected, onClick, onCopyPlan }: PlanListItemProps) {
+export const PlanListItem = ({ plan, isSelected, onClick, onCopyPlan }: PlanListItemProps) => {
   const [isDragging, setIsDragging] = useState(false);
 
   const formattedDate = new Date(plan.modifiedAt).toLocaleDateString(undefined, {

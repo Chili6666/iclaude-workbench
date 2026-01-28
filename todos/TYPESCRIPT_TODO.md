@@ -19,19 +19,19 @@
 - [x] Add JSDoc documentation to TaskBoardPanel class and public members (src/panels/TaskBoardPanel.ts:4,5,65,85) - 15 min
 - [x] Add JSDoc documentation to TaskBoardViewProvider class and public members (src/panels/TaskBoardViewProvider.ts:4,5,21,102) - 15 min
 - [x] Add JSDoc documentation to TaskService class and public members (src/services/TaskService.ts:22,25,34,105,181,185) - 20 min
-- [ ] Convert React components from `function` keyword to arrow functions (webview/src/App/App.tsx:18,30) - 10 min
-- [ ] Convert React components from `function` keyword to arrow functions (webview/src/components/Swimlane/Swimlane.tsx:16) - 5 min
-- [ ] Convert React components from `function` keyword to arrow functions (webview/src/components/TaskCard/TaskCard.tsx:13) - 5 min
-- [ ] Convert React components from `function` keyword to arrow functions (webview/src/components/PlanView/PlanView.tsx:21) - 5 min
-- [ ] Convert React components from `function` keyword to arrow functions (webview/src/components/PlanSidebar/PlanSidebar.tsx:17) - 5 min
-- [ ] Convert React components from `function` keyword to arrow functions (webview/src/components/PlanContentViewer/PlanContentViewer.tsx:14) - 5 min
-- [ ] Convert React components from `function` keyword to arrow functions (webview/src/components/PlanListItem/PlanListItem.tsx:15) - 5 min
-- [ ] Convert React components from `function` keyword to arrow functions (webview/src/components/VerticalSplitter/VerticalSplitter.tsx:13) - 5 min
-- [ ] Convert static getInstance method to arrow function (src/services/TaskService.ts:34) - 5 min
-- [ ] Convert static getInstance method to arrow function (src/services/PlanService.ts:33) - 5 min
-- [ ] Add HTML sanitization for dangerouslySetInnerHTML (webview/src/components/PlanContentViewer/PlanContentViewer.tsx:42) - 30 min
+- [x] Convert React components from `function` keyword to arrow functions (webview/src/App/App.tsx:18,30) - 10 min
+- [x] Convert React components from `function` keyword to arrow functions (webview/src/components/Swimlane/Swimlane.tsx:16) - 5 min
+- [x] Convert React components from `function` keyword to arrow functions (webview/src/components/TaskCard/TaskCard.tsx:13) - 5 min
+- [x] Convert React components from `function` keyword to arrow functions (webview/src/components/PlanView/PlanView.tsx:21) - 5 min
+- [x] Convert React components from `function` keyword to arrow functions (webview/src/components/PlanSidebar/PlanSidebar.tsx:17) - 5 min
+- [x] Convert React components from `function` keyword to arrow functions (webview/src/components/PlanContentViewer/PlanContentViewer.tsx:14) - 5 min
+- [x] Convert React components from `function` keyword to arrow functions (webview/src/components/PlanListItem/PlanListItem.tsx:15) - 5 min
+- [x] Convert React components from `function` keyword to arrow functions (webview/src/components/VerticalSplitter/VerticalSplitter.tsx:13) - 5 min
+- [x] Convert static getInstance method to arrow function (src/services/TaskService.ts:34) - 5 min
+- [x] Convert static getInstance method to arrow function (src/services/PlanService.ts:33) - 5 min
+- [x] Add HTML sanitization for dangerouslySetInnerHTML (webview/src/components/PlanContentViewer/PlanContentViewer.tsx:42) - 30 min
 
-**Status: 5/16 completed** - Total Effort: ~1h 55min remaining
+**Status: 16/16 completed** - Total Effort: ~30min remaining
 
 ### MEDIUM Priority
 

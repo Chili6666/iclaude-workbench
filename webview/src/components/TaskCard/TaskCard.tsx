@@ -10,7 +10,7 @@ interface TaskCardProps {
  * TaskCard component displays a single task with its details.
  * Supports click-to-open functionality when a file path is associated.
  */
-export function TaskCard({ task, onOpenFile }: TaskCardProps) {
+export const TaskCard = ({ task, onOpenFile }: TaskCardProps) => {
   const isBlocked = task.blockedBy && task.blockedBy.length > 0;
 
   const handleClick = () => {

@@ -30,12 +30,12 @@ export class PlanService {
    * Returns the singleton instance of PlanService, creating it if necessary.
    * @returns The shared PlanService instance
    */
-  public static getInstance(): PlanService {
+  public static getInstance = (): PlanService => {
     if (!PlanService.instance) {
       PlanService.instance = new PlanService();
     }
     return PlanService.instance;
-  }
+  };
 
   private get plansDirectory(): string {
     return path.join(os.homedir(), '.claude', 'plans');

@@ -10,11 +10,11 @@ interface VerticalSplitterProps {
 /**
  * VerticalSplitter component provides a draggable divider for resizing panels.
  */
-export function VerticalSplitter({
+export const VerticalSplitter = ({
   onResize,
   minWidth = 150,
   maxWidth = 500,
-}: VerticalSplitterProps) {
+}: VerticalSplitterProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const startXRef = useRef(0);
   const startWidthRef = useRef(0);

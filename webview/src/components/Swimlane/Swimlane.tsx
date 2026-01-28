@@ -13,7 +13,7 @@ interface SwimlaneProps {
  * Swimlane component displays a column of tasks filtered by status.
  * Part of the Kanban-style task board layout.
  */
-export function Swimlane({ title, status, tasks, onOpenFile }: SwimlaneProps) {
+export const Swimlane = ({ title, status, tasks, onOpenFile }: SwimlaneProps) => {
   const filteredTasks = tasks.filter((t) => t.status === status);
 
   const statusClass =

@@ -16,19 +16,19 @@ declare function acquireVsCodeApi(): VSCodeApi;
 const vscode = typeof acquireVsCodeApi !== 'undefined' ? acquireVsCodeApi() : null;
 
 // Restore persisted state
-function getPersistedState(): { activeTab?: TabType; selectedFolderPath?: string } {
+const getPersistedState = (): { activeTab?: TabType; selectedFolderPath?: string } => {
   if (vscode) {
     const state = vscode.getState() as { activeTab?: TabType; selectedFolderPath?: string } | undefined;
     return state || {};
   }
   return {};
-}
+};
 
 /**
  * Main App component for the iClaude Workbench.
  * Displays a Kanban-style task board with three swimlanes: Pending, In Progress, and Completed.
  */
-export function App() {
+export const App = () => {
   const persistedState = getPersistedState();
   const [activeTab, setActiveTab] = useState<TabType>(persistedState.activeTab || 'tasks');
   const [tasks, setTasks] = useState<Task[]>([]);

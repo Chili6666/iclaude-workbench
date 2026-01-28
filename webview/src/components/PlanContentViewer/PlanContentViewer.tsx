@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 import { Plan } from '../../interfaces/Plan';
 import styles from './PlanContentViewer.module.css';
 
@@ -11,10 +12,11 @@ interface PlanContentViewerProps {
 /**
  * PlanContentViewer component renders markdown content for the selected plan.
  */
-export function PlanContentViewer({ plan, onOpenFile }: PlanContentViewerProps) {
+export const PlanContentViewer = ({ plan, onOpenFile }: PlanContentViewerProps) => {
   const renderedContent = useMemo(() => {
     if (!plan) return '';
-    return marked.parse(plan.content, { async: false }) as string;
+    const markdownHtml = marked.parse(plan.content, { async: false }) as string;
+    return DOMPurify.sanitize(markdownHtml);
   }, [plan]);
 
   if (!plan) {

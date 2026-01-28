@@ -20,7 +20,7 @@ interface PlanSidebarProps {
 /**
  * PlanSidebar component displays a search input and list of plans.
  */
-export function PlanSidebar({
+export const PlanSidebar = ({
   plans,
   selectedPlanId,
   searchQuery,
@@ -31,7 +31,7 @@ export function PlanSidebar({
   onDropPlan,
   selectedFolderPath,
   onFolderChange,
-}: PlanSidebarProps) {
+}: PlanSidebarProps) => {
   const filteredPlans = searchQuery.trim()
     ? plans.filter(
         (plan) =>

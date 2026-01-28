@@ -31,12 +31,12 @@ export class TaskService {
    * Returns the singleton instance of TaskService, creating it if necessary.
    * @returns The shared TaskService instance
    */
-  public static getInstance(): TaskService {
+  public static getInstance = (): TaskService => {
     if (!TaskService.instance) {
       TaskService.instance = new TaskService();
     }
     return TaskService.instance;
-  }
+  };
 
   private get tasksDirectory(): string {
     return path.join(os.homedir(), '.claude', 'tasks');
