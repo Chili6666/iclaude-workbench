@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { TaskBoardPanel } from './panels/TaskBoardPanel';
 import { TaskBoardViewProvider } from './panels/TaskBoardViewProvider';
 
-export function activate(context: vscode.ExtensionContext) {
+export const activate = (context: vscode.ExtensionContext): void => {
   console.log('iClaude Workbench extension is now active');
 
   // Register the sidebar view provider
@@ -25,6 +25,6 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(showTaskBoardCommand);
 }
 
-export function deactivate() {
+export const deactivate = (): void => {
   console.log('iClaude Workbench extension is now deactivated');
 }

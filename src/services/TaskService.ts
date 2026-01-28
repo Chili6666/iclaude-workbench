@@ -2,26 +2,21 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs';
+import { Task, TaskStatus } from '../interfaces/Task';
 
-export type TaskStatus = 'pending' | 'in_progress' | 'completed';
+export { Task, TaskStatus };
 
-export interface Task {
-  id: string;
-  subject: string;
-  description?: string;
-  status: TaskStatus;
-  owner?: string;
-  activeForm?: string;
-  blockedBy?: string[];
-  blocks?: string[];
-  metadata?: Record<string, unknown>;
-  sessionId?: string;
-  filePath?: string;
-}
+/** Delay in milliseconds for debouncing file system events */
+const DEBOUNCE_DELAY_MS = 100;
 
+/**
+ * TaskService manages Claude Code tasks by watching the file system
+ * and providing task data to the UI. Implements a singleton pattern.
+ */
 export class TaskService {
   private static instance: TaskService;
   private _onTasksChanged = new vscode.EventEmitter<Task[]>();
+  /** Event that fires when tasks are updated (added, modified, or removed). */
   public readonly onTasksChanged = this._onTasksChanged.event;
   private _watchers: fs.FSWatcher[] = [];
   private _tasks: Task[] = [];
@@ -31,6 +26,10 @@ export class TaskService {
     this._setupWatchers();
   }
 
+  /**
+   * Returns the singleton instance of TaskService, creating it if necessary.
+   * @returns The shared TaskService instance
+   */
   public static getInstance(): TaskService {
     if (!TaskService.instance) {
       TaskService.instance = new TaskService();
@@ -87,7 +86,7 @@ export class TaskService {
       // Re-setup watchers in case directories were added/removed
       this._cleanupWatchers();
       this._setupWatchers();
-    }, 100);
+    }, DEBOUNCE_DELAY_MS);
   }
 
   private _cleanupWatchers(): void {
@@ -102,6 +101,11 @@ export class TaskService {
     this._onTasksChanged.fire(this._tasks);
   }
 
+  /**
+   * Loads all tasks from the Claude tasks directory.
+   * Scans all session subdirectories and parses task JSON files.
+   * @returns Promise resolving to an array of all tasks
+   */
   public async loadAllTasks(): Promise<Task[]> {
     const tasks: Task[] = [];
     const tasksDir = this.tasksDirectory;
@@ -178,10 +182,17 @@ export class TaskService {
     return 'pending'; // Default fallback
   }
 
+  /**
+   * Returns the currently cached list of tasks.
+   * @returns Array of tasks from the last load/reload
+   */
   public getTasks(): Task[] {
     return this._tasks;
   }
 
+  /**
+   * Disposes the service by cleaning up file watchers, timers, and event emitters.
+   */
   public dispose(): void {
     this._cleanupWatchers();
     if (this._debounceTimer) {
