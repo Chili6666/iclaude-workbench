@@ -1,7 +1,13 @@
 import * as vscode from 'vscode';
 import { TaskService, Task } from '../services/TaskService';
+import { WebviewMessage } from '../interfaces/WebviewMessage';
 
+/**
+ * TaskBoardPanel manages the webview panel for displaying the task board.
+ * It handles rendering, message passing, and task updates in a standalone editor panel.
+ */
 export class TaskBoardPanel {
+  /** The currently active panel instance, or undefined if no panel is open. */
   public static currentPanel: TaskBoardPanel | undefined;
   private readonly _panel: vscode.WebviewPanel;
   private _disposables: vscode.Disposable[] = [];
@@ -48,7 +54,7 @@ export class TaskBoardPanel {
     });
   }
 
-  private async _handleMessage(message: { type: string; taskId?: string; filePath?: string }): Promise<void> {
+  private async _handleMessage(message: WebviewMessage): Promise<void> {
     switch (message.type) {
       case 'requestTasks':
         await this._loadInitialTasks();
@@ -62,7 +68,12 @@ export class TaskBoardPanel {
     }
   }
 
-  public static render(extensionUri: vscode.Uri) {
+  /**
+   * Renders the task board panel. If a panel already exists, it reveals it;
+   * otherwise, it creates a new panel.
+   * @param extensionUri - The URI of the extension's root directory
+   */
+  public static render(extensionUri: vscode.Uri): void {
     if (TaskBoardPanel.currentPanel) {
       TaskBoardPanel.currentPanel._panel.reveal(vscode.ViewColumn.One);
     } else {
@@ -82,7 +93,10 @@ export class TaskBoardPanel {
     }
   }
 
-  public dispose() {
+  /**
+   * Disposes the panel and cleans up all associated resources.
+   */
+  public dispose(): void {
     TaskBoardPanel.currentPanel = undefined;
 
     this._panel.dispose();

@@ -1,7 +1,13 @@
 import * as vscode from 'vscode';
 import { TaskService, Task } from '../services/TaskService';
+import { WebviewMessage } from '../interfaces/WebviewMessage';
 
+/**
+ * TaskBoardViewProvider manages the webview view for the task board sidebar.
+ * It implements WebviewViewProvider to integrate with VS Code's sidebar panel system.
+ */
 export class TaskBoardViewProvider implements vscode.WebviewViewProvider {
+  /** The unique identifier for this webview view type. */
   public static readonly viewType = 'iclaude-workbench.taskBoardView';
   private _view?: vscode.WebviewView;
   private _disposables: vscode.Disposable[] = [];
@@ -18,11 +24,18 @@ export class TaskBoardViewProvider implements vscode.WebviewViewProvider {
     );
   }
 
+  /**
+   * Called when the webview view is resolved. Sets up the webview content,
+   * message handling, and loads initial tasks.
+   * @param webviewView - The webview view to resolve
+   * @param _context - Context for the webview view resolution
+   * @param _token - Cancellation token
+   */
   public resolveWebviewView(
     webviewView: vscode.WebviewView,
     _context: vscode.WebviewViewResolveContext,
     _token: vscode.CancellationToken
-  ) {
+  ): void {
     this._view = webviewView;
 
     webviewView.webview.options = {
@@ -62,7 +75,7 @@ export class TaskBoardViewProvider implements vscode.WebviewViewProvider {
     }
   }
 
-  private async _handleMessage(message: { type: string; taskId?: string; filePath?: string }): Promise<void> {
+  private async _handleMessage(message: WebviewMessage): Promise<void> {
     switch (message.type) {
       case 'requestTasks':
         await this._loadInitialTasks();
@@ -99,6 +112,9 @@ export class TaskBoardViewProvider implements vscode.WebviewViewProvider {
 </html>`;
   }
 
+  /**
+   * Disposes the view provider and cleans up all associated resources.
+   */
   public dispose(): void {
     while (this._disposables.length) {
       const disposable = this._disposables.pop();
