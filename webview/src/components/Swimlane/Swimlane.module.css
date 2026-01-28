@@ -1,0 +1,65 @@
+/* Swimlane Component Styles */
+
+.swimlane {
+  display: grid;
+  grid-template-rows: var(--swimlane-header-height) 1fr;
+  min-height: 0;
+  overflow: hidden;
+  border-right: 1px solid var(--border-color);
+}
+
+.swimlane:last-child {
+  border-right: none;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--content-padding);
+  background-color: rgba(16, 24, 34, 0.5);
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.015em;
+  color: var(--text-secondary);
+}
+
+.count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 20px;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 9999px;
+  background-color: #1e293b;
+  color: var(--text-muted);
+}
+
+/* Count badge variants */
+.swimlaneInProgress .count {
+  background-color: rgba(19, 109, 236, 0.2);
+  color: var(--primary);
+}
+
+.swimlaneCompleted .count {
+  background-color: rgba(34, 197, 94, 0.2);
+  color: var(--accent-green);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: var(--content-padding);
+  overflow-y: auto;
+}

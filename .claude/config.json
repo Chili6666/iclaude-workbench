@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0",
+  "projectName": "My Project",
+  "metrics": {
+    "enabled": false
+  },
+  "agents": {
+    "over-engineering-detector": {
+      "ignoreFolders": [
+        ".claude"
+      ]
+    }
+  }
+}
