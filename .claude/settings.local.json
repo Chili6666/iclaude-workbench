@@ -37,7 +37,10 @@
       "WebFetch(domain:github.com)",
       "Bash(git -C \"D:\\\\dev\\\\myGithub\\\\iclaude-workbench\" diff --stat)",
       "Bash(git rev-parse:*)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(test:*)",
+      "Bash(npx vite build:*)",
+      "Bash([ -f node_modules/dompurify/package.json ])"
     ],
     "deny": [],
     "ask": []
