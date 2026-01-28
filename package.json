@@ -2,7 +2,7 @@
   "name": "iclaude-workbench",
   "displayName": "iClaude Workbench",
   "description": "AI-native task management workbench for Claude Code",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "publisher": "iclaude",
   "engines": {
     "vscode": "^1.85.0"
