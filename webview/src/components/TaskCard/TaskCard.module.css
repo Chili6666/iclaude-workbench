@@ -1,0 +1,89 @@
+/* TaskCard Component Styles */
+
+.taskCard {
+  padding: 16px;
+  border-radius: 8px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: border-color 0.15s, opacity 0.15s;
+}
+
+.taskCard:hover {
+  border-color: var(--primary);
+}
+
+.taskCardBlocked {
+  opacity: 0.7;
+}
+
+.taskCardInProgress {
+  border-left: 4px solid var(--primary);
+}
+
+.taskCardCompleted {
+  opacity: 0.7;
+  background-color: rgba(15, 23, 42, 0.3);
+}
+
+.taskCardCompleted .subject {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.id {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-family: monospace;
+}
+
+.owner {
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: var(--primary);
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.subject {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.description {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+.blocked {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--accent-red);
+}
+
+.activeForm {
+  font-size: 13px;
+  color: var(--primary);
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.session {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: monospace;
+}

@@ -1,0 +1,133 @@
+/* App Component Styles */
+
+/* CSS Custom Properties */
+:root {
+  --header-height: 56px;
+  --tab-bar-height: 48px;
+  --swimlane-header-height: 44px;
+  --content-padding: 16px;
+
+  /* Colors from design */
+  --primary: #136dec;
+  --bg-primary: #101822;
+  --bg-secondary: #101822;
+  --bg-card: rgba(15, 23, 42, 0.5);
+  --border-color: #324867;
+  --text-primary: #ffffff;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --accent-green: #22c55e;
+  --accent-orange: #f97316;
+  --accent-red: #ef4444;
+}
+
+/* Reset & Base */
+:global(*) {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:global(body) {
+  font-family: 'Inter', var(--vscode-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  height: 100vh;
+  overflow: hidden;
+}
+
+:global(#root) {
+  height: 100vh;
+}
+
+/* Main App Container - CSS Grid Layout */
+.appContainer {
+  display: grid;
+  grid-template-rows: var(--header-height) var(--tab-bar-height) 1fr;
+  height: 100vh;
+  width: 100%;
+}
+
+/* ===== HEADER ===== */
+.header {
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
+  align-items: center;
+  padding: 0 var(--content-padding);
+  padding-bottom: 8px;
+  background-color: var(--bg-primary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.headerIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: var(--primary);
+}
+
+.headerTitle {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* ===== TAB BAR ===== */
+.tabBar {
+  display: flex;
+  align-items: stretch;
+  gap: 32px;
+  padding: 0 var(--content-padding);
+  background-color: var(--bg-primary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tabBarTab {
+  display: flex;
+  align-items: center;
+  padding: 16px 0 13px 0;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.015em;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.tabBarTab:hover {
+  color: var(--text-primary);
+}
+
+.tabBarTabActive {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+/* ===== SWIMLANES CONTAINER ===== */
+.swimlanes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  overflow: hidden;
+}
+
+/* ===== LOADING & EMPTY STATE ===== */
+.loading,
+.emptyState {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}

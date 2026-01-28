@@ -1,9 +1,17 @@
+# Dependencies
 node_modules/
-out/
-.vscode-test/
-*.vsix
-*.log
-.DS_Store
-dist/
 
+# Build output
+out/
+dist/
+*.vsix
+
+# Testing
+.vscode-test/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
 nul
