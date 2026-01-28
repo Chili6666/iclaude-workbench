@@ -85,12 +85,6 @@ export const App = () => {
     }
   };
 
-  const handleCopyPlan = (filePath: string) => {
-    if (vscode) {
-      vscode.postMessage({ type: 'copyPlanToProject', sourcePath: filePath });
-    }
-  };
-
   const handleDropPlan = (sourcePath: string, targetFolderPath: string) => {
     if (vscode) {
       vscode.postMessage({ type: 'copyPlanToFolder', sourcePath, targetFolderPath });
@@ -176,7 +170,6 @@ export const App = () => {
             onSearchChange={setPlanSearchQuery}
             onSelectPlan={setSelectedPlanId}
             onOpenFile={handleOpenPlanFile}
-            onCopyPlan={handleCopyPlan}
             workspaceFolders={workspaceFolders}
             onDropPlan={handleDropPlan}
             selectedFolderPath={selectedFolderPath}

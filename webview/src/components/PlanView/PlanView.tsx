@@ -13,7 +13,6 @@ interface PlanViewProps {
   onSearchChange: (query: string) => void;
   onSelectPlan: (planId: string) => void;
   onOpenFile: (filePath: string) => void;
-  onCopyPlan: (filePath: string) => void;
   workspaceFolders: WorkspaceFolder[];
   onDropPlan: (sourcePath: string, targetFolderPath: string) => void;
   selectedFolderPath: string;
@@ -30,7 +29,6 @@ export const PlanView = ({
   onSearchChange,
   onSelectPlan,
   onOpenFile,
-  onCopyPlan,
   workspaceFolders,
   onDropPlan,
   selectedFolderPath,
@@ -55,7 +53,6 @@ export const PlanView = ({
           searchQuery={searchQuery}
           onSearchChange={onSearchChange}
           onSelectPlan={onSelectPlan}
-          onCopyPlan={onCopyPlan}
           workspaceFolders={workspaceFolders}
           onDropPlan={onDropPlan}
           selectedFolderPath={selectedFolderPath}

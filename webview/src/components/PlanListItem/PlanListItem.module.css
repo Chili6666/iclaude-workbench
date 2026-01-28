@@ -24,50 +24,36 @@
   min-width: 0;
 }
 
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
 .title {
   font-size: 14px;
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.activeBadge {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background-color: var(--primary);
+  color: white;
+  flex-shrink: 0;
+}
+
 .date {
   font-size: 12px;
   color: var(--text-muted);
-}
-
-.copyButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  border: none;
-  border-radius: 4px;
-  background: transparent;
-  color: var(--text-muted);
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity 0.15s, background-color 0.15s, color 0.15s;
-  flex-shrink: 0;
-  margin-left: 8px;
-}
-
-.planListItem:hover .copyButton {
-  opacity: 1;
-}
-
-.copyButton:hover {
-  background-color: rgba(19, 109, 236, 0.2);
-  color: var(--primary);
-}
-
-.copyButton:active {
-  background-color: rgba(19, 109, 236, 0.3);
 }
 
 .dragging {

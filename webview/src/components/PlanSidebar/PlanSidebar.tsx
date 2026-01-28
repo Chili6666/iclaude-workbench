@@ -10,7 +10,6 @@ interface PlanSidebarProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   onSelectPlan: (planId: string) => void;
-  onCopyPlan: (filePath: string) => void;
   workspaceFolders: WorkspaceFolder[];
   onDropPlan: (sourcePath: string, targetFolderPath: string) => void;
   selectedFolderPath: string;
@@ -26,7 +25,6 @@ export const PlanSidebar = ({
   searchQuery,
   onSearchChange,
   onSelectPlan,
-  onCopyPlan,
   workspaceFolders,
   onDropPlan,
   selectedFolderPath,
@@ -57,13 +55,13 @@ export const PlanSidebar = ({
             {searchQuery.trim() ? 'No matching plans' : 'No plans found'}
           </div>
         ) : (
-          filteredPlans.map((plan) => (
+          filteredPlans.map((plan, index) => (
             <PlanListItem
               key={plan.id}
               plan={plan}
               isSelected={plan.id === selectedPlanId}
+              isActive={index === 0}
               onClick={() => onSelectPlan(plan.id)}
-              onCopyPlan={onCopyPlan}
             />
           ))
         )}

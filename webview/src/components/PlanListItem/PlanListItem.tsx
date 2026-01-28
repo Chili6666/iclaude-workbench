@@ -5,15 +5,15 @@ import styles from './PlanListItem.module.css';
 interface PlanListItemProps {
   plan: Plan;
   isSelected: boolean;
+  isActive?: boolean;
   onClick: () => void;
-  onCopyPlan: (filePath: string) => void;
 }
 
 /**
  * PlanListItem component displays a single plan in the sidebar list.
- * Shows a copy button on hover to copy plan files to the project.
+ * Shows an "Active" badge for the currently active plan.
  */
-export const PlanListItem = ({ plan, isSelected, onClick, onCopyPlan }: PlanListItemProps) => {
+export const PlanListItem = ({ plan, isSelected, isActive, onClick }: PlanListItemProps) => {
   const [isDragging, setIsDragging] = useState(false);
 
   const formattedDate = new Date(plan.modifiedAt).toLocaleDateString(undefined, {
@@ -21,11 +21,6 @@ export const PlanListItem = ({ plan, isSelected, onClick, onCopyPlan }: PlanList
     day: 'numeric',
     year: 'numeric',
   });
-
-  const handleCopyClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onCopyPlan(plan.filePath);
-  };
 
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.effectAllowed = 'copy';
@@ -54,19 +49,12 @@ export const PlanListItem = ({ plan, isSelected, onClick, onCopyPlan }: PlanList
       }}
     >
       <div className={styles.content}>
-        <div className={styles.title}>{plan.title}</div>
+        <div className={styles.titleRow}>
+          <span className={styles.title}>{plan.title}</span>
+          {isActive && <span className={styles.activeBadge}>Active</span>}
+        </div>
         <div className={styles.date}>{formattedDate}</div>
       </div>
-      <button
-        className={styles.copyButton}
-        onClick={handleCopyClick}
-        title="Copy plan to project folder"
-        aria-label="Copy plan to project folder"
-      >
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-          <path d="M13 1H5c-.55 0-1 .45-1 1v2H2c-.55 0-1 .45-1 1v9c0 .55.45 1 1 1h8c.55 0 1-.45 1-1v-2h2c.55 0 1-.45 1-1V2c0-.55-.45-1-1-1zM9 13H3V6h6v7zm4-3h-2V5c0-.55-.45-1-1-1H6V3h7v7z"/>
-        </svg>
-      </button>
     </div>
   );
 }
