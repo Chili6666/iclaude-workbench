@@ -3,5 +3,8 @@
   "scripts": {
     "lint": "eslint src --ext ts,tsx",
     "lint:fix": "eslint src --ext ts,tsx --fix"
+  },
+  "dependencies": {
+    "marked": "11.0.0"
   }
 }

@@ -1,8 +1,8 @@
 # TypeScript Quality Improvement Report
 
-**Generated**: 2026-01-28 12:00
+**Generated**: 2026-01-28 14:30
 **Git Branch**: main
-**Last Commit**: 72b3e68 Merge pull request #4 from Chili6666/ci/github-actions
+**Last Commit**: 7df88ba Merge pull request #12 from Chili6666/chore/cleanup-docs
 **Guideline**: .claude/guidelines/typescript-codingguideline.md
 **Framework**: typescript
 **Lint Command**: npm run lint
@@ -10,223 +10,282 @@
 
 ---
 
-## Critical Issues (HIGH/CRITICAL Priority - 5 items)
+## Critical Issues (HIGH/CRITICAL Priority - 11 items)
 
-### 1. Function Keyword Usage in Extension Entry Point
+### 1. Function Keyword Usage in React Components
 
-**File(s)**: src/extension.ts:5, src/extension.ts:28
-**Effort**: 10 min
-**Impact**: Code Style / Consistency
+**File(s)**:
+- webview/src/App/App.tsx:18,30
+- webview/src/components/Swimlane/Swimlane.tsx:16
+- webview/src/components/TaskCard/TaskCard.tsx:13
+- webview/src/components/PlanView/PlanView.tsx:21
+- webview/src/components/PlanSidebar/PlanSidebar.tsx:17
+- webview/src/components/PlanContentViewer/PlanContentViewer.tsx:14
+- webview/src/components/PlanListItem/PlanListItem.tsx:15
+- webview/src/components/VerticalSplitter/VerticalSplitter.tsx:13
 
-**Description**: The `activate` and `deactivate` functions use the `function` keyword instead of arrow functions, violating the coding guidelines.
+**Effort**: 45 min total (5 min per component)
+**Impact**: Code Style / Guideline Compliance
+
+**Description**: All React components in the webview use the `function` keyword instead of arrow functions, violating the project's TypeScript coding guidelines which explicitly state "No `function` keyword (use arrow functions)" as a CRITICAL rule.
 
 **Current Implementation**:
 ```typescript
-export function activate(context: vscode.ExtensionContext) { ... }
-export function deactivate() { ... }
+export function App() {
+  // component logic
+}
+```
+
+**Recommendation**: Convert all components to arrow function syntax:
+```typescript
+export const App = (): JSX.Element => {
+  // component logic
+};
+```
+
+**Benefits**:
+- Consistent code style across the codebase
+- Compliance with project coding guidelines
+- Lexical `this` binding (though not relevant for functional components)
+
+---
+
+### 2. Static Method Syntax in Services
+
+**File(s)**:
+- src/services/TaskService.ts:34
+- src/services/PlanService.ts:33
+
+**Effort**: 10 min
+**Impact**: Code Style / Guideline Compliance
+
+**Description**: The singleton `getInstance()` methods use traditional method syntax instead of arrow function class properties.
+
+**Current Implementation**:
+```typescript
+public static getInstance(): TaskService {
+  // ...
+}
 ```
 
 **Recommendation**: Convert to arrow function syntax:
 ```typescript
-export const activate = (context: vscode.ExtensionContext): void => {
-  // ...
-};
-
-export const deactivate = (): void => {
+public static getInstance = (): TaskService => {
   // ...
 };
 ```
 
 **Benefits**:
-- Consistent coding style across the codebase
-- Follows team coding guidelines
+- Consistent with project guidelines
+- Arrow function syntax provides lexical binding
 
 ---
 
-### 2. Mixed Exports in TaskService File
+### 3. Security: XSS Vulnerability with dangerouslySetInnerHTML
 
-**File(s)**: src/services/TaskService.ts:6-20
-**Effort**: 15 min
-**Impact**: Architecture / Maintainability
+**File(s)**: webview/src/components/PlanContentViewer/PlanContentViewer.tsx:40-43
+**Effort**: 30 min
+**Impact**: Security
 
-**Description**: The file exports a type alias (`TaskStatus`), an interface (`Task`), and a class (`TaskService`) together, violating the "one exported entity per file" guideline.
+**Description**: The component renders markdown content using `dangerouslySetInnerHTML` without sanitization. While the content comes from local markdown files, a malicious `.md` file could execute arbitrary JavaScript in the webview context.
 
 **Current Implementation**:
 ```typescript
-export type TaskStatus = 'pending' | 'in_progress' | 'completed';
-export interface Task { ... }
-export class TaskService { ... }
+<div
+  className={styles.content}
+  dangerouslySetInnerHTML={{ __html: renderedContent }}
+/>
 ```
 
-**Recommendation**: Split into separate files:
-- `src/interfaces/TaskStatus.ts` - export type TaskStatus
-- `src/interfaces/Task.ts` - export interface Task
-- `src/services/TaskService.ts` - export class TaskService (import from interfaces)
+**Recommendation**: Add HTML sanitization using DOMPurify:
+```typescript
+import DOMPurify from 'dompurify';
+
+<div
+  className={styles.content}
+  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(renderedContent) }}
+/>
+```
 
 **Benefits**:
-- Clear file organization
-- Single responsibility per file
-- Easier to locate type definitions
-- Better maintainability
+- Prevents XSS attacks from malicious markdown content
+- Follows security best practices
+- Complies with project security guidelines
 
 ---
 
-### 3. Missing JSDoc on TaskBoardPanel
+## Important Improvements (MEDIUM Priority - 9 items)
 
-**File(s)**: src/panels/TaskBoardPanel.ts:4, 5, 65, 85
-**Effort**: 15 min
-**Impact**: Documentation / Maintainability
+### 1. Missing JSDoc Documentation on Interfaces
 
-**Description**: The `TaskBoardPanel` class and its public members lack JSDoc documentation.
+**File(s)**:
+- src/interfaces/Task.ts:1-15
+- src/interfaces/Plan.ts:1-7
+- webview/src/interfaces/Task.ts:1-14
+- webview/src/interfaces/Plan.ts:1-7
+- webview/src/interfaces/VSCodeApi.ts:1-5
 
-**Recommendation**: Add JSDoc comments:
+**Effort**: 45 min total
+**Impact**: Maintainability / Documentation
+
+**Description**: Several exported interfaces lack proper JSDoc documentation. The Plan interfaces use inline comments instead of the preferred `@property` block style.
+
+**Current Implementation**:
+```typescript
+export interface Plan {
+  name: string;     // file name without extension
+  fullPath: string; // absolute path
+  // ...
+}
+```
+
+**Recommendation**: Use proper JSDoc format:
 ```typescript
 /**
- * Manages the webview panel for displaying the task board.
+ * Represents a plan document in the workbench
+ * @property name - The file name without extension
+ * @property fullPath - The absolute file path
+ * @property content - The raw markdown content
  */
-export class TaskBoardPanel {
-  /** Current active panel instance */
-  public static currentPanel: TaskBoardPanel | undefined;
-
-  /**
-   * Renders the task board panel or brings existing one to focus.
-   * @param extensionUri - The extension URI for resource resolution
-   */
-  public static render = (extensionUri: vscode.Uri): void => { ... }
-
-  /**
-   * Disposes of the panel and cleans up resources.
-   */
-  public dispose = (): void => { ... }
+export interface Plan {
+  name: string;
+  fullPath: string;
+  content: string;
 }
 ```
 
 **Benefits**:
-- Improved code readability
-- Better IDE IntelliSense support
+- Better IDE support with hover documentation
+- Consistent documentation style
 - Easier onboarding for new developers
 
 ---
 
-### 4. Missing JSDoc on TaskBoardViewProvider
+### 2. Console Statements in Production Code
 
-**File(s)**: src/panels/TaskBoardViewProvider.ts:4, 5, 21, 102
-**Effort**: 15 min
-**Impact**: Documentation / Maintainability
+**File(s)**:
+- src/extension.ts:6,29
+- src/services/TaskService.ts:65,76,146,165,189
+- src/services/PlanService.ts:59,113,136
 
-**Description**: The `TaskBoardViewProvider` class and its public members lack JSDoc documentation.
+**Effort**: 25 min
+**Impact**: Code Quality / Production Readiness
 
-**Recommendation**: Add JSDoc comments to the class and all public members including `viewType`, `resolveWebviewView()`, and `dispose()`.
+**Description**: Multiple console.log, console.warn, and console.error statements exist in production code, violating the guideline "No `console.log` or `debugger` statements in production code".
+
+**Recommendation**:
+1. Remove debug console.log statements entirely
+2. For error logging, implement a proper logging service using VS Code's OutputChannel:
+
+```typescript
+const outputChannel = vscode.window.createOutputChannel('iClaude Workbench');
+
+// Instead of console.error
+outputChannel.appendLine(`Error: ${error.message}`);
+```
 
 **Benefits**:
-- Improved code readability
-- Better IDE IntelliSense support
-- Easier onboarding for new developers
+- Cleaner production code
+- Proper error visibility in VS Code's Output panel
+- Better debugging experience for users
 
 ---
 
-### 5. Missing JSDoc on TaskService
+### 3. Code Duplication Between Panel Classes
 
-**File(s)**: src/services/TaskService.ts:22, 25, 34, 105, 181, 185
+**File(s)**:
+- src/panels/TaskBoardPanel.ts
+- src/panels/TaskBoardViewProvider.ts
+
+**Effort**: 45 min
+**Impact**: Maintainability / DRY Principle
+
+**Description**: Approximately 85 lines of code are duplicated between TaskBoardPanel and TaskBoardViewProvider, including `_handleMessage`, `_copyPlanToProject`, and `_getWebviewContent` methods.
+
+**Recommendation**: Extract shared functionality into a utility module:
+
+```typescript
+// src/utils/webviewUtils.ts
+export const handleWebviewMessage = async (
+  message: WebviewMessage,
+  taskService: TaskService,
+  planService: PlanService,
+  webview: vscode.Webview
+) => {
+  // shared message handling logic
+};
+
+export const copyPlanToProject = async (planPath: string) => {
+  // shared file copy logic
+};
+
+export const getWebviewContent = (
+  webview: vscode.Webview,
+  extensionUri: vscode.Uri
+): string => {
+  // shared HTML generation
+};
+```
+
+**Benefits**:
+- Single source of truth for shared logic
+- Easier maintenance when adding new message types
+- Reduced risk of inconsistencies between implementations
+
+---
+
+## Suggestions (LOW Priority - 4 items)
+
+### 1. Improve WebviewMessage Type Safety
+
+**File(s)**: src/interfaces/WebviewMessage.ts:7-16
 **Effort**: 20 min
-**Impact**: Documentation / Maintainability
+**Impact**: Type Safety
 
-**Description**: The `TaskService` class and its public members lack JSDoc documentation.
+The current interface uses optional properties which is less type-safe. A discriminated union would provide better compile-time guarantees:
 
-**Recommendation**: Add JSDoc comments to the class and all public members including `onTasksChanged`, `getInstance()`, `loadAllTasks()`, `getTasks()`, and `dispose()`.
-
-**Benefits**:
-- Improved code readability
-- Better IDE IntelliSense support
-- Easier onboarding for new developers
+```typescript
+type WebviewMessage =
+  | { type: 'requestTasks' }
+  | { type: 'openTaskFile'; filePath: string }
+  | { type: 'copyPlanToProject'; planPath: string };
+```
 
 ---
 
-## Important Improvements (MEDIUM Priority - 3 items)
+### 2. Add Runtime Validation for Persisted State
 
-### 1. Extract Message Type Interface (TaskBoardPanel)
+**File(s)**: webview/src/App/App.tsx:91
+**Effort**: 15 min
+**Impact**: Robustness
 
-**File(s)**: src/panels/TaskBoardPanel.ts:51
-**Effort**: 10 min
-**Impact**: Type Safety / Maintainability
+The `vscode.getState()` return value is cast without validation. Consider adding a type guard:
 
-**Description**: The `_handleMessage` method uses an inline type definition for the message parameter.
-
-**Current Implementation**:
 ```typescript
-private async _handleMessage(message: { type: string; taskId?: string; filePath?: string }): Promise<void>
+const isValidState = (state: unknown): state is PersistedState => {
+  return typeof state === 'object' && state !== null;
+};
 ```
-
-**Recommendation**: Extract to a named interface:
-```typescript
-interface TaskBoardMessage {
-  type: string;
-  taskId?: string;
-  filePath?: string;
-}
-
-private _handleMessage = async (message: TaskBoardMessage): Promise<void> => { ... }
-```
-
-**Benefits**:
-- Better type safety
-- Reusable across components
-- Cleaner method signatures
-- Easier to extend message types
 
 ---
 
-### 2. Extract Message Type Interface (TaskBoardViewProvider)
+### 3. Improve VerticalSplitter DOM Access
 
-**File(s)**: src/panels/TaskBoardViewProvider.ts:65
-**Effort**: 10 min
-**Impact**: Type Safety / Maintainability
+**File(s)**: webview/src/components/VerticalSplitter/VerticalSplitter.tsx:27-29
+**Effort**: 20 min
+**Impact**: Robustness
 
-**Description**: Similar to TaskBoardPanel, the message handler uses an inline type definition.
-
-**Recommendation**: Extract to a shared interface (could be the same `TaskBoardMessage` interface) for consistency across both panel and view provider.
-
-**Benefits**:
-- Code consistency
-- DRY principle adherence
-- Single source of truth for message types
+The component accesses `previousElementSibling` which relies on DOM structure. Using React refs or passing initial width as a prop would be more robust.
 
 ---
 
-### 3. Define Debounce Constant
+### 4. Consolidate Loading States
 
-**File(s)**: src/services/TaskService.ts:90
-**Effort**: 5 min
-**Impact**: Readability / Maintainability
+**File(s)**: webview/src/App/App.tsx:33-38
+**Effort**: 15 min
+**Impact**: Code Organization
 
-**Description**: The debounce timeout uses a magic number `100` without explanation.
-
-**Current Implementation**:
-```typescript
-this._debounceTimer = setTimeout(() => {
-  // ...
-}, 100);
-```
-
-**Recommendation**: Define as a named constant:
-```typescript
-private static readonly DEBOUNCE_DELAY_MS = 100;
-
-this._debounceTimer = setTimeout(() => {
-  // ...
-}, TaskService.DEBOUNCE_DELAY_MS);
-```
-
-**Benefits**:
-- Self-documenting code
-- Easier to adjust value if needed
-- Clear intent of the magic number
-
----
-
-## Suggestions (LOW Priority - 0 items)
-
-*No low priority suggestions at this time.*
+Multiple loading states (`loading`, `plansLoading`) could be consolidated into a single state object or derived state to simplify state management.
 
 ---
 
@@ -234,22 +293,31 @@ this._debounceTimer = setTimeout(() => {
 
 What was done well in this codebase:
 
-1. **Proper Private Member Naming**: All private members are consistently prefixed with underscore (`_panel`, `_disposables`, `_taskService`, `_view`, `_watchers`, `_tasks`, `_debounceTimer`), indicating good adherence to naming conventions.
+1. **Proper TypeScript strict mode**: Both `tsconfig.json` files have `strict: true` enabled, ensuring maximum type safety across the entire codebase.
 
-2. **Correct Unused Parameter Handling**: The `_context` and `_token` parameters in `resolveWebviewView` are properly prefixed with underscore to indicate they are required by the interface but not used in the implementation.
+2. **Excellent singleton pattern implementation**: `TaskService` and `PlanService` correctly implement the singleton pattern with private constructors and getInstance() methods, preventing multiple instances.
 
-3. **Good Error Handling Patterns**: The codebase uses try-catch blocks appropriately and logs errors using `console.warn` and `console.error`, providing useful debugging information.
+3. **Thorough resource cleanup**: Both services implement `dispose()` methods that correctly clean up file watchers, timers, and event emitters, preventing memory leaks in the VS Code extension lifecycle.
 
-4. **Clean Class Structure**: Classes follow a logical structure with private members, constructors, and methods organized in a readable manner.
+4. **Defensive parsing in TaskService**: The `_parseTaskFile()` method (TaskService.ts:158-192) demonstrates excellent defensive coding by validating data existence, using safe type coercion, and returning null on parse failures.
 
-5. **File Naming Convention**: All files follow proper naming conventions - PascalCase for class files (`TaskBoardPanel.ts`, `TaskService.ts`) and lowercase for the entry point (`extension.ts`).
+5. **Good accessibility implementation**: React components include proper `role`, `aria-label`, `aria-selected`, and `tabIndex` attributes (TaskCard.tsx:34-36, PlanListItem.tsx:31-34).
+
+6. **Smart debouncing**: File system watchers use debouncing (`DEBOUNCE_DELAY_MS`) to prevent excessive reloads during rapid file changes, improving performance.
+
+7. **Proper React hooks usage**: Components correctly use `useState`, `useEffect`, `useCallback`, and `useMemo` with appropriate dependency arrays.
+
+8. **Content Security Policy**: Webview HTML includes proper CSP headers (TaskBoardPanel.ts:223) to prevent XSS attacks, following VS Code webview security best practices.
+
+9. **Clean component architecture**: React components follow a clear separation of concerns with dedicated components for Swimlane, TaskCard, PlanView, and related UI elements.
 
 **Examples of good patterns to maintain:**
-- The singleton pattern implementation in `TaskService` with `getInstance()` method
-- The event emitter pattern for task change notifications (`_onTasksChanged`)
-- The disposable pattern implementation for resource cleanup
+- The file watcher debouncing pattern in services
+- The defensive JSON parsing approach in `_parseTaskFile`
+- The consistent use of TypeScript interfaces for all data structures
+- The proper disposal pattern in VS Code extension services
 
 ---
 
 **Report Last Updated:** 2026-01-28
-**Total Improvements**: 5 critical/high priority, 3 medium priority, 0 low priority suggestions
+**Total Improvements**: 11 critical, 9 medium priority, 4 low priority suggestions

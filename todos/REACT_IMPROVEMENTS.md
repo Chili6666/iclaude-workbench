@@ -1,333 +1,291 @@
 # React Quality Improvement Report
 
-**Generated**: 2026-01-28 12:05
+**Generated**: 2026-01-28 12:30
 **Git Branch**: main
-**Last Commit**: 72b3e68 Merge pull request #4 from Chili6666/ci/github-actions
+**Last Commit**: 7df88ba Merge pull request #12 from Chili6666/chore/cleanup-docs
 **Guideline**: .claude/guidelines/react-codingguideline.md
 **Framework**: react
-**Lint Command**: N/A (no dedicated webview lint script)
-**Build Command**: npm run build:webview
+**Lint Command**: npm run lint && cd webview && npm run lint
+**Build Command**: npm run build
 
 ---
 
-## Critical Issues (HIGH/CRITICAL Priority - 5 items)
+## Critical Issues (HIGH/CRITICAL Priority - 3 items)
 
-### 1. Missing Component Folder Structure
+### 1. CSS Module Files Using Wrong Extension
 
-**File(s)**: webview/src/App.tsx, webview/src/main.tsx
-**Effort**: 50 min total
-**Impact**: Architecture / Maintainability
+**File(s)**:
+- webview/src/App/App.module.css
+- webview/src/components/Swimlane/Swimlane.module.css
+- webview/src/components/TaskCard/TaskCard.module.css
+- webview/src/components/VerticalSplitter/VerticalSplitter.module.css
+- webview/src/components/PlanContentViewer/PlanContentViewer.module.css
+- webview/src/components/PlanSidebar/PlanSidebar.module.css
+- webview/src/components/PlanView/PlanView.module.css
+- webview/src/components/PlanListItem/PlanListItem.module.css
 
-**Description**: The React coding guidelines mandate that **every component MUST have its own dedicated folder**. Currently, all components (`App`, `TaskCard`, `Swimlane`) are in a flat structure within `src/`.
-
-**Current Implementation**:
-```
-webview/src/
-├── App.tsx           ← Contains App, TaskCard, and Swimlane
-├── main.css          ← Global CSS (not CSS Modules)
-└── main.tsx          ← Entry point
-```
-
-**Recommendation**: Restructure to component-per-folder pattern:
-```
-webview/src/
-├── components/
-│   ├── App/
-│   │   ├── App.tsx
-│   │   └── App.module.scss
-│   ├── TaskCard/
-│   │   ├── TaskCard.tsx
-│   │   └── TaskCard.module.scss
-│   └── Swimlane/
-│       ├── Swimlane.tsx
-│       └── Swimlane.module.scss
-├── interfaces/
-│   ├── Task.ts
-│   └── VSCodeApi.ts
-└── main.tsx
-```
-
-**Benefits**:
-- Clear component boundaries
-- Co-located styles and tests
-- Easier navigation and maintenance
-- Follows enterprise React standards
-
----
-
-### 2. CSS Not Using CSS Modules
-
-**File(s)**: webview/src/main.css
-**Effort**: 30 min
-**Impact**: Architecture / Maintainability / Scoping
-
-**Description**: The guidelines require CSS Modules with `.module.scss` extension. The current implementation uses a global CSS file with string class names.
-
-**Current Implementation**:
-```tsx
-import './main.css';
-// ...
-<div className="task-card">  // String class names
-```
-
-**Recommendation**: Convert to CSS Modules with SCSS:
-```tsx
-import styles from './TaskCard.module.scss';
-// ...
-<div className={styles.taskCard}>  // Scoped class names
-```
-
-**Benefits**:
-- Scoped CSS (no global namespace pollution)
-- TypeScript support for class names
-- Prevents class name collisions
-- Enables SCSS features (variables, nesting, mixins)
-
----
-
-### 3. Arrow Function Components Instead of Function Declarations
-
-**File(s)**: webview/src/App.tsx:31, 72, 103
-**Effort**: 15 min
-**Impact**: Code Style / Consistency
-
-**Description**: React coding guidelines specify that components should use **function declarations**, not arrow functions. This is the one exception to the TypeScript arrow function rule.
-
-**Current Implementation**:
-```tsx
-function TaskCard({ task, onOpenFile }: { task: Task; onOpenFile: (filePath: string) => void }) {
-  // ...
-}
-```
-
-Wait - I need to re-check. Let me verify the current implementation is actually using function declarations (which it is). The issue is different.
-
-**Correction**: The components ARE using function declarations, which is correct. However, the inline prop types should be extracted to separate interfaces.
-
-**Actual Issue**: Props are defined inline instead of as separate interfaces.
-
-**Current Implementation**:
-```tsx
-function TaskCard({ task, onOpenFile }: { task: Task; onOpenFile: (filePath: string) => void }) {
-```
-
-**Recommendation**: Extract props to interfaces:
-```tsx
-interface TaskCardProps {
-  task: Task;
-  onOpenFile: (filePath: string) => void;
-}
-
-export function TaskCard({ task, onOpenFile }: TaskCardProps) {
-```
-
-**Benefits**:
-- Cleaner function signatures
-- Reusable prop type definitions
-- Better IntelliSense support
-
----
-
-### 4. Multiple Components in Single File
-
-**File(s)**: webview/src/App.tsx
 **Effort**: 20 min
-**Impact**: Architecture / Maintainability
+**Impact**: Coding Guideline Violation
 
-**Description**: The `App.tsx` file contains three components (`TaskCard`, `Swimlane`, `App`) plus type definitions. Each component should be in its own file within its own folder.
+**Description**: All CSS Module files use `.module.css` extension instead of the required `.module.scss` extension per project coding guidelines.
+
+**Current Implementation**: Files named with `.module.css` extension.
+
+**Recommendation**: Rename all files to use `.module.scss` extension and update imports accordingly.
+
+**Benefits**:
+- Compliance with project coding standards
+- Enables SCSS features (variables, nesting, mixins) if needed in future
+
+---
+
+### 2. Function Declaration Used for Non-Component Utility
+
+**File(s)**: webview/src/App/App.tsx:18-24
+**Effort**: 5 min
+**Impact**: Coding Guideline Violation
+
+**Description**: The `getPersistedState` utility function uses the `function` keyword instead of an arrow function. Per TypeScript coding guidelines, only React components should use function declarations.
 
 **Current Implementation**:
-- Lines 31-70: `TaskCard` component
-- Lines 72-101: `Swimlane` component
-- Lines 103-168: `App` component
-- Lines 4-17: Type definitions
-
-**Recommendation**: Split into separate files as outlined in issue #1.
-
-**Benefits**:
-- Single responsibility per file
-- Easier to locate and modify components
-- Better code organization
-
----
-
-### 5. Types Defined Within Component File
-
-**File(s)**: webview/src/App.tsx:4-24
-**Effort**: 15 min
-**Impact**: Architecture / Reusability
-
-**Description**: `Task`, `TaskStatus`, and `VSCodeApi` interfaces are defined at the top of `App.tsx`. These should be in dedicated interface files.
-
-**Recommendation**: Create an `interfaces/` folder:
-```
-webview/src/interfaces/
-├── Task.ts           ← Task and TaskStatus
-└── VSCodeApi.ts      ← VSCodeApi interface
-```
-
-**Benefits**:
-- Reusable across components
-- Clear separation of concerns
-- Easier to find type definitions
-
----
-
-## Important Improvements (MEDIUM Priority - 6 items)
-
-### 1. Missing JSDoc Documentation
-
-**File(s)**: webview/src/App.tsx:31, 72, 103
-**Effort**: 15 min total
-**Impact**: Documentation / Maintainability
-
-**Description**: Components lack JSDoc documentation explaining their purpose and props.
-
-**Recommendation**: Add JSDoc to each component:
 ```tsx
-/**
- * Displays a single task as a card with status, owner, and description.
- * Clicking the card opens the associated file if one exists.
- */
-export function TaskCard({ task, onOpenFile }: TaskCardProps) {
+function getPersistedState(): { activeTab?: TabType } {
+  if (vscode) {
+    const state = vscode.getState() as { activeTab?: TabType } | undefined;
+    return state || {};
+  }
+  return {};
+}
 ```
+
+**Recommendation**: Convert to arrow function:
+```tsx
+const getPersistedState = (): { activeTab?: TabType } => {
+  if (vscode) {
+    const state = vscode.getState() as { activeTab?: TabType } | undefined;
+    return state || {};
+  }
+  return {};
+};
+```
+
+**Benefits**:
+- Consistency with project coding standards
+- Clear distinction between components (function declarations) and utilities (arrow functions)
 
 ---
 
-### 2. Missing Accessibility Attributes
+### 3. XSS Vulnerability with dangerouslySetInnerHTML
 
-**File(s)**: webview/src/App.tsx:42-46
-**Effort**: 10 min
+**File(s)**: webview/src/components/PlanContentViewer/PlanContentViewer.tsx:40-43
+**Effort**: 30 min
+**Impact**: Security
+
+**Description**: The component renders markdown content using `dangerouslySetInnerHTML` without sanitization. The `marked` library parses markdown which could contain embedded HTML/JavaScript, creating a potential XSS vulnerability.
+
+**Current Implementation**:
+```tsx
+<div
+  className={styles.content}
+  dangerouslySetInnerHTML={{ __html: renderedContent }}
+/>
+```
+
+**Recommendation**: Install and use DOMPurify to sanitize HTML:
+```tsx
+import DOMPurify from 'dompurify';
+
+const renderedContent = useMemo(() => {
+  if (!plan) return '';
+  const html = marked.parse(plan.content, { async: false }) as string;
+  return DOMPurify.sanitize(html);
+}, [plan]);
+```
+
+**Benefits**:
+- Protection against XSS attacks
+- Safe rendering of user-provided markdown content
+
+---
+
+## Important Improvements (MEDIUM Priority - 4 items)
+
+### 1. Missing Keyboard Navigation for Tabs
+
+**File(s)**: webview/src/App/App.tsx:103-120
+**Effort**: 15 min
 **Impact**: Accessibility
 
-**Description**: The clickable `TaskCard` div lacks proper accessibility attributes.
+**Description**: Tab elements have `role="tab"` but lack keyboard navigation support. Users cannot navigate tabs using keyboard (arrow keys, Enter/Space).
 
-**Current Implementation**:
+**Current Implementation**: Tabs only respond to click events.
+
+**Recommendation**:
+- Add `tabIndex={0}` to tab elements
+- Add `onKeyDown` handler for Enter/Space key activation
+- Add `role="tablist"` to parent nav element
+
 ```tsx
-<div
-  className={`task-card ${statusClass} ${isBlocked ? 'task-card--blocked' : ''}`}
-  onClick={handleClick}
-  style={{ cursor: task.filePath ? 'pointer' : 'default' }}
->
+<nav className={styles.tabBar} role="tablist">
+  <div
+    className={`${styles.tabBarTab} ${activeTab === 'tasks' ? styles.tabBarTabActive : ''}`}
+    onClick={() => handleTabChange('tasks')}
+    role="tab"
+    tabIndex={0}
+    aria-selected={activeTab === 'tasks'}
+    onKeyDown={(e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        handleTabChange('tasks');
+      }
+    }}
+  >
 ```
 
-**Recommendation**: Add ARIA attributes and keyboard support:
-```tsx
-<div
-  className={`task-card ${statusClass} ${isBlocked ? 'task-card--blocked' : ''}`}
-  onClick={handleClick}
-  onKeyDown={(e) => e.key === 'Enter' && handleClick()}
-  role="button"
-  tabIndex={task.filePath ? 0 : -1}
-  aria-label={`Task ${task.id}: ${task.subject}`}
-  style={{ cursor: task.filePath ? 'pointer' : 'default' }}
->
-```
+**Benefits**:
+- WCAG 2.1 compliance
+- Keyboard-only users can navigate the interface
 
 ---
 
-### 3. Consider useCallback for Event Handlers
+### 2. Missing Accessible Label on Search Input
 
-**File(s)**: webview/src/App.tsx:132
+**File(s)**: webview/src/components/PlanSidebar/PlanSidebar.tsx:36-42
 **Effort**: 5 min
-**Impact**: Performance (minor)
+**Impact**: Accessibility
 
-**Description**: The `handleOpenFile` function is recreated on every render. While not critical for this small app, it's good practice to memoize handlers that are passed to child components.
+**Description**: Search input lacks an accessible label. Screen readers may not announce the purpose of the input.
+
+**Recommendation**: Add `aria-label` attribute:
+```tsx
+<input
+  type="text"
+  className={styles.searchInput}
+  placeholder="Search plans..."
+  value={searchQuery}
+  onChange={(e) => onSearchChange(e.target.value)}
+  aria-label="Search plans"
+/>
+```
+
+**Benefits**:
+- Screen reader users will understand the input's purpose
+- Improved accessibility compliance
+
+---
+
+### 3. Missing JSDoc Documentation on Plan Interface
+
+**File(s)**: webview/src/interfaces/Plan.ts:1-7
+**Effort**: 10 min
+**Impact**: Maintainability
+
+**Description**: The Plan interface has inline comments but lacks proper JSDoc documentation as required by coding guidelines.
+
+**Current Implementation**:
+```tsx
+export interface Plan {
+  id: string;        // Filename without .md extension
+  title: string;     // From first H1 heading or filename
+  content: string;   // Full markdown content
+  filePath: string;  // Absolute path to the file
+  modifiedAt: number;// Timestamp for sorting
+}
+```
+
+**Recommendation**: Add proper JSDoc:
+```tsx
+/**
+ * Represents a plan document in the workbench
+ * @property id - Filename without .md extension
+ * @property title - From first H1 heading or filename
+ * @property content - Full markdown content
+ * @property filePath - Absolute path to the file
+ * @property modifiedAt - Timestamp for sorting
+ */
+export interface Plan {
+  id: string;
+  title: string;
+  content: string;
+  filePath: string;
+  modifiedAt: number;
+}
+```
+
+**Benefits**:
+- Better IDE intellisense
+- Improved code documentation
+
+---
+
+### 4. Missing tablist Role on Tab Container
+
+**File(s)**: webview/src/App/App.tsx:103
+**Effort**: 5 min
+**Impact**: Accessibility
+
+**Description**: The parent navigation element for tabs should have `role="tablist"` to properly announce the tab navigation pattern to screen readers.
+
+**Recommendation**: Add role to nav element:
+```tsx
+<nav className={styles.tabBar} role="tablist">
+```
+
+**Benefits**:
+- Proper ARIA landmark for assistive technologies
+- Complete tab pattern implementation
+
+---
+
+## Suggestions (LOW Priority - 3 items)
+
+### 1. Memoize Filtered Tasks in Swimlane
+
+**File(s)**: webview/src/components/Swimlane/Swimlane.tsx:17
+**Effort**: 10 min
+**Impact**: Performance
+
+The `filteredTasks` array is recalculated on every render. For larger task lists, memoizing with `useMemo` would improve performance.
 
 **Recommendation**:
 ```tsx
-const handleOpenFile = useCallback((filePath: string) => {
-  if (vscode) {
-    vscode.postMessage({ type: 'openTaskFile', filePath });
-  }
-}, []);
+const filteredTasks = useMemo(
+  () => tasks.filter((t) => t.status === status),
+  [tasks, status]
+);
 ```
 
 ---
 
-### 4. Add Dedicated ESLint Configuration for Webview
+### 2. Memoize Filtered Plans in PlanSidebar
 
-**File(s)**: webview/ (new file needed)
-**Effort**: 15 min
-**Impact**: Code Quality
-
-**Description**: The webview folder lacks its own ESLint configuration. The main project's lint script only covers `src/` (TypeScript extension code).
-
-**Recommendation**: Add ESLint configuration for the webview:
-1. Create `webview/.eslintrc.json` extending the root config
-2. Add `"lint": "eslint src --ext tsx,ts"` to webview/package.json
-3. Update root lint script to include webview
-
----
-
-### 5. Props Interface Extraction
-
-**File(s)**: webview/src/App.tsx:31, 72-82
+**File(s)**: webview/src/components/PlanSidebar/PlanSidebar.tsx:25-31
 **Effort**: 10 min
-**Impact**: Readability / Maintainability
+**Impact**: Performance
 
-**Description**: Component props are defined inline in the function signature rather than as separate interfaces.
+The filter operation (including content search) runs on every render. For many plans with large content, this could impact performance.
 
-**Current Implementation**:
+**Recommendation**: Wrap filter logic in `useMemo`:
 ```tsx
-function Swimlane({
-  title,
-  status,
-  tasks,
-  onOpenFile,
-}: {
-  title: string;
-  status: TaskStatus;
-  tasks: Task[];
-  onOpenFile: (filePath: string) => void;
-}) {
-```
-
-**Recommendation**: Extract to interface:
-```tsx
-interface SwimlaneProps {
-  title: string;
-  status: TaskStatus;
-  tasks: Task[];
-  onOpenFile: (filePath: string) => void;
-}
-
-export function Swimlane({ title, status, tasks, onOpenFile }: SwimlaneProps) {
+const filteredPlans = useMemo(
+  () => plans.filter((plan) =>
+    plan.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    plan.content.toLowerCase().includes(searchQuery.toLowerCase())
+  ),
+  [plans, searchQuery]
+);
 ```
 
 ---
 
-### 6. Export Components for Testability
+### 3. Add Keyboard Support for VerticalSplitter
 
-**File(s)**: webview/src/App.tsx
-**Effort**: 5 min
-**Impact**: Testability
-
-**Description**: `TaskCard` and `Swimlane` components are not exported, making them difficult to test in isolation.
-
-**Recommendation**: When moving to separate files, ensure each component is properly exported for testing.
-
----
-
-## Suggestions (LOW Priority - 2 items)
-
-### 1. Consider React Query or SWR for Data Fetching
-
-**File(s)**: webview/src/App.tsx:107-130
-**Effort**: 1-2 hours
-**Impact**: Code Quality / Maintainability
-
-The current message-based data fetching pattern works but could benefit from a more robust solution if the app grows. Consider React Query for better caching, loading states, and error handling.
-
----
-
-### 2. Add Loading Skeleton
-
-**File(s)**: webview/src/App.tsx:152-153
+**File(s)**: webview/src/components/VerticalSplitter/VerticalSplitter.tsx:55-62
 **Effort**: 30 min
-**Impact**: User Experience
+**Impact**: Accessibility
 
-Replace the "Loading tasks..." text with a skeleton UI for better perceived performance.
+The splitter has `role="separator"` but keyboard-only users cannot resize the panel. Adding keyboard handlers would improve accessibility.
+
+**Recommendation**: Add `tabIndex`, ARIA value attributes, and keyboard handlers for arrow key resizing.
 
 ---
 
@@ -335,25 +293,36 @@ Replace the "Loading tasks..." text with a skeleton UI for better perceived perf
 
 What was done well in this codebase:
 
-1. **Proper Function Declarations**: Components use function declarations (`function TaskCard()`) rather than arrow functions with `React.FC`, following modern React best practices.
+1. **Proper Component Folder Structure**: Each component correctly lives in its own dedicated folder with co-located styles (Swimlane/Swimlane.tsx, TaskCard/TaskCard.tsx, etc.)
 
-2. **Clean Hook Usage**: The `useEffect` hook properly handles cleanup with `removeEventListener`, preventing memory leaks.
+2. **Function Declarations for Components**: All React components correctly use function declarations (not arrow functions with React.FC), following modern React best practices.
 
-3. **Good TypeScript Typing**: The `Task` interface is well-typed with appropriate optional properties and union types for status.
+3. **Well-Defined TypeScript Interfaces**: Props interfaces are properly defined for all components with explicit types and no use of `any`.
 
-4. **Proper State Management**: Uses `useState` appropriately for local component state (tasks, loading).
+4. **Good Accessibility Foundation**: Several components include accessibility attributes (TaskCard has role="button", tabIndex, aria-label, onKeyDown; PlanListItem has similar attributes).
 
-5. **Clean Conditional Rendering**: Uses appropriate patterns (early returns, ternary, short-circuit) for conditional rendering.
+5. **Clean Component Interfaces**: Props interfaces are well-structured and explicit:
+```tsx
+interface PlanViewProps {
+  plans: Plan[];
+  selectedPlanId: string | null;
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+  onSelectPlan: (planId: string) => void;
+  onOpenFile: (filePath: string) => void;
+  onCopyPlan: (filePath: string) => void;
+}
+```
 
-6. **StrictMode Enabled**: The app is wrapped in `React.StrictMode` for better development warnings.
+6. **Proper State Management**: useState hooks are correctly typed and state is properly lifted to App component for cross-component communication.
 
 **Examples of good patterns to maintain:**
-- The event listener cleanup pattern in useEffect
-- Typed interfaces for component data structures
-- Clean separation of event handlers from JSX
-- Using template literals for dynamic class names
+- Co-located component files with CSS Modules
+- Explicit TypeScript interfaces for all props
+- Accessibility attributes on interactive elements
+- Clear separation of concerns between components
 
 ---
 
 **Report Last Updated:** 2026-01-28
-**Total Improvements**: 5 critical/high priority, 6 medium priority, 2 low priority suggestions
+**Total Improvements**: 3 critical, 4 medium priority, 3 low priority suggestions

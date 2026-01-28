@@ -19,6 +19,13 @@
   --accent-green: #22c55e;
   --accent-orange: #f97316;
   --accent-red: #ef4444;
+
+  /* VS Code dropdown colors */
+  --vscode-dropdown-bg: #2D2D30;
+  --vscode-dropdown-hover-bg: #2A2D2E;
+  --vscode-dropdown-border: #3E3E42;
+  --vscode-dropdown-text: #CCCCCC;
+  --vscode-focus-border: #007ACC;
 }
 
 /* Reset & Base */
@@ -117,6 +124,11 @@
 .swimlanes {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  overflow: hidden;
+}
+
+/* ===== PLAN CONTAINER ===== */
+.planContainer {
   overflow: hidden;
 }
 

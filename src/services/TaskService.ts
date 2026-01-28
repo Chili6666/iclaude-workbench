@@ -7,7 +7,7 @@ import { Task, TaskStatus } from '../interfaces/Task';
 export { Task, TaskStatus };
 
 /** Delay in milliseconds for debouncing file system events */
-const DEBOUNCE_DELAY_MS = 100;
+const DEBOUNCE_DELAY_MS = 300;
 
 /**
  * TaskService manages Claude Code tasks by watching the file system
@@ -21,6 +21,7 @@ export class TaskService {
   private _watchers: fs.FSWatcher[] = [];
   private _tasks: Task[] = [];
   private _debounceTimer: NodeJS.Timeout | undefined;
+  private _isReloading = false;
 
   private constructor() {
     this._setupWatchers();
@@ -81,11 +82,20 @@ export class TaskService {
     if (this._debounceTimer) {
       clearTimeout(this._debounceTimer);
     }
-    this._debounceTimer = setTimeout(() => {
-      this._reloadTasks();
-      // Re-setup watchers in case directories were added/removed
-      this._cleanupWatchers();
-      this._setupWatchers();
+    this._debounceTimer = setTimeout(async () => {
+      // Skip if already reloading to prevent race conditions
+      if (this._isReloading) {
+        return;
+      }
+      this._isReloading = true;
+      try {
+        await this._reloadTasks();
+        // Re-setup watchers in case directories were added/removed
+        this._cleanupWatchers();
+        this._setupWatchers();
+      } finally {
+        this._isReloading = false;
+      }
     }, DEBOUNCE_DELAY_MS);
   }
 
@@ -136,7 +146,13 @@ export class TaskService {
       console.error('Error loading tasks:', error);
     }
 
-    return tasks;
+    // Deduplicate tasks by sessionId+id (safety net for race conditions)
+    const uniqueTasks = new Map<string, Task>();
+    for (const task of tasks) {
+      const key = `${task.sessionId}-${task.id}`;
+      uniqueTasks.set(key, task);
+    }
+    return Array.from(uniqueTasks.values());
   }
 
   private async _parseTaskFile(filePath: string, sessionId: string): Promise<Task | null> {
