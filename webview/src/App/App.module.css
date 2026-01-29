@@ -132,9 +132,8 @@
   overflow: hidden;
 }
 
-/* ===== LOADING & EMPTY STATE ===== */
-.loading,
-.emptyState {
+/* ===== LOADING STATE ===== */
+.loading {
   grid-column: 1 / -1;
   display: flex;
   align-items: center;

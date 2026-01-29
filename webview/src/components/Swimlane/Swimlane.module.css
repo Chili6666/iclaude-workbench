@@ -63,3 +63,13 @@
   padding: var(--content-padding);
   overflow-y: auto;
 }
+
+.emptyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  color: var(--text-muted);
+  font-size: 13px;
+  text-align: center;
+}

@@ -32,9 +32,13 @@ export const Swimlane = ({ title, status, tasks, onOpenFile }: SwimlaneProps) =>
         </span>
       </div>
       <div className={styles.content}>
-        {filteredTasks.map((task) => (
-          <TaskCard key={`${task.sessionId}-${task.id}`} task={task} onOpenFile={onOpenFile} />
-        ))}
+        {filteredTasks.length === 0 ? (
+          <div className={styles.emptyState}>No tasks</div>
+        ) : (
+          filteredTasks.map((task) => (
+            <TaskCard key={`${task.sessionId}-${task.id}`} task={task} onOpenFile={onOpenFile} />
+          ))
+        )}
       </div>
     </section>
   );

@@ -141,8 +141,6 @@ export const App = () => {
         {activeTab === 'tasks' ? (
           loading ? (
             <div className={styles.loading}>Loading tasks...</div>
-          ) : tasks.length === 0 ? (
-            <div className={styles.emptyState}>No tasks found in ~/.claude/tasks</div>
           ) : (
             <>
               <Swimlane title="Pending" status="pending" tasks={tasks} onOpenFile={handleOpenFile} />
